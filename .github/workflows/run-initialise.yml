@@ -25,11 +25,3 @@ jobs:
     - name: Run initialise_data.py
       run: |
         python initialise_data.py
-
-    - name: Commit generated files
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add data/*
-        git commit -m "Add generated data files from initialise_data.py"
-        git push
