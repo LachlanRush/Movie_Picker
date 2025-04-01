@@ -5,7 +5,7 @@ import pandas as pd
 import json
 from tabulate import tabulate
 
-# Load precomputed goodies
+# Load precomputed stuff
 cosine_sim_combined = np.load("data/cosine_sim_combined.parquet.npy")
 with open("data/unique_genres.json", "r") as f:
     available_genres = json.load(f)
@@ -20,8 +20,7 @@ def main():
         print("Pick an option:")
         print("1. Explore by genre")
         print("2. Search by movie title")
-        print("3. Exit")
-        user_choice = input("Enter 1, 2, or 3: ").strip()
+        user_choice = input("Enter 1 or 2: ").strip()
 
         if user_choice == "1":
             print("\nAvailable Genres:\n" + ", ".join(available_genres) + "\n")
@@ -31,35 +30,19 @@ def main():
                 search_titles(df, selected_genre, cosine_sim_combined)
             if ask_restart():
                 continue
-            break
 
         elif user_choice == "2":
             search_titles(df, None, cosine_sim_combined)
             if ask_restart():
                 continue
-            break
-
-        elif user_choice == "3":
-            print("Cheers for using the system—see ya!")
-            break
 
         else:
-            print("Nah, mate, pick 1, 2, or 3.")
+            print("Nah, mate, pick 1 or 2.")
 
 def ask_restart():
-    # Quick check if user wants another go
+    # Checks if user wants to keep going
     restart = input("\nAnother search? (y/n): ").strip().lower()
     return restart == 'y' or restart == 'yes'
-
-def get_result_count():
-    while True:
-        try:
-            count = int(input("\nHow many recs? (5-50): ").strip())
-            if 5 <= count <= 50:
-                return count
-            print("Gimme a number between 5 and 50.")
-        except ValueError:
-            print("That’s not a number, try again.")
 
 def search_genre(df, available_genres_lower, available_genres, user_genre=None):
     if not user_genre:
@@ -89,7 +72,8 @@ def search_titles(df, genre, cosine_sim_combined, user_title=None):
     if not user_title:
         user_title = input("\nEnter a movie: ").strip().lower()
 
-    result_count = get_result_count()
+    # Always show 10 recs, no user input needed
+    result_count = 10
 
     if user_title in df['title'].str.lower().values:
         selected_title = df['title'][df['title'].str.lower() == user_title].iloc[0]
@@ -99,9 +83,9 @@ def search_titles(df, genre, cosine_sim_combined, user_title=None):
             print(f"\n{filtered_recommendations}")
             return
         if genre:
-            print(f"\nTop {result_count} {genre} Movies like {selected_title}:\n")
+            print(f"\nTop 10 {genre} Movies like {selected_title}:\n")
         else:
-            print(f"\nTop {result_count} Movies like {selected_title}:\n")
+            print(f"\nTop 10 Movies like {selected_title}:\n")
 
         display_columns = ['title', 'score', 'vote_average', 'vote_count']
         if 'similarity_score' in filtered_recommendations.columns:
