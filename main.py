@@ -87,3 +87,7 @@ def search_titles(df, genre, cosine_sim_combined):
         partial_matches = df[df['title'].str.lower().str.contains(user_title, na=False)]['title']
         if not partial_matches.empty:
             print("\nDid you mean one of these?\n" + "\n".join(partial_matches[:5]))
+
+if __name__ == "__main__":
+    main()
+
